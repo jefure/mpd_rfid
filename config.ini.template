@@ -1,0 +1,5 @@
+; config.ini
+[DEFAULT]
+MPD_HOST = localhost
+MPD_PORT = 6600
+DB_FILE = pythonsqlite.db
