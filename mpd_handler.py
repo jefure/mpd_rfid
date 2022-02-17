@@ -1,20 +1,21 @@
-from mpd import MPDClient
+from mpd import MPDClient, CommandError
 import configparser
 
 config = configparser.ConfigParser()
 config.read('config.ini')
 
+HOST = config['DEFAULT']['MPD_HOST']
+PORT = config['DEFAULT']['MPD_PORT']
 
-def connect_mpd(host, port):
+
+def connect_mpd():
     """ Connect to the mpd server
-    :param host: The host uri
-    :param port: The port
     :return The mpd client
     """
     client = MPDClient()
     client.timeout = 10
     client.idletimeout = None
-    client.connect(config['DEFAULT']['MPD_HOST'], config['DEFAULT']['MPD_PORT'])
+    client.connect(HOST, PORT)
     return client
 
 
@@ -46,3 +47,24 @@ def play_playlist(client, playlist_name):
     """
     client.load(playlist_name)
     client.play(0)
+
+
+def get_image(client, playlist):
+    songs = load_playlist_info(client, playlist[1])
+    try:
+        song = songs[0]
+        return load_image(client, song)
+    except IndexError:
+        print("Playlist has no songs: ", playlist)
+
+    return {}
+
+
+def load_image(client, song):
+    image = {}
+    try:
+        image = client.readpicture(song["file"])
+    except CommandError:
+        print("No Image for ", song)
+
+    return image

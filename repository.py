@@ -31,12 +31,11 @@ SELECT playlist_name FROM playlistKeys WHERE id = ?
 
 def create_connection():
     """ create a database connection to a SQLite database
-    :param db_file: Name of db file
     :return The database connection
     """
     conn = None
     try:
-        conn = sqlite3.connect(db_file)
+        conn = sqlite3.connect(DB_FILE)
     except Error as e:
         print(e)
     finally:
@@ -83,14 +82,14 @@ def add_playlist(conn, playlist):
 
 
 def get_all_playlists():
-    conn = create_connection(DB_FILE)
+    conn = create_connection()
     playlists = conn.execute(LIST_PLAYLISTS).fetchall()
     conn.close()
     return playlists
 
 
 def get_playlist(playlist_id):
-    conn = create_connection(DB_FILE)
+    conn = create_connection()
     playlist = conn.execute(SELECT_PLAYLIST, (playlist_id,)).fetchone()[0]
     conn.close()
     return playlist
