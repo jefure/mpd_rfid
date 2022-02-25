@@ -7,14 +7,14 @@ config.read('config.ini')
 
 DB_FILE = config['DEFAULT']['DB_FILE']
 
-CREATE_PLAYLIST_TABLE = """
+CREATE_PLAYLIST_TABLE = '''
 CREATE TABLE IF NOT EXISTS playlistKeys (
-	id integer PRIMARY KEY,
-	playlist_name NOT NULL,
-	rfid text,
-	added_date text
+   id integer PRIMARY KEY,
+   playlist_name NOT NULL,
+   rfid text,
+   added_date text
 );
-"""
+'''
 
 INSERT_PLAYLIST = '''
 INSERT INTO playlistKeys(playlist_name,rfid,added_date) VALUES (?,?,?)
@@ -28,9 +28,14 @@ SELECT_PLAYLIST = '''
 SELECT playlist_name FROM playlistKeys WHERE id = ?
 '''
 
+SET_RFID = '''
+UPDATE playlistKeys SET rfid = ? WHERE id = ?
+'''
+
 
 def create_connection():
-    """ create a database connection to a SQLite database
+    """
+    Create a database connection to a SQLite database
     :return The database connection
     """
     conn = None
@@ -38,16 +43,15 @@ def create_connection():
         conn = sqlite3.connect(DB_FILE)
     except Error as e:
         print(e)
-    finally:
         if conn:
-            print("Closing db connection")
-            # conn.close()
+            conn.close()
 
     return conn
 
 
 def create_table(conn):
-    """ create a table from the create_table_sql statement
+    """
+    Create a table from the create_table_sql statement
     :param conn: Connection object
     """
     try:
@@ -58,7 +62,8 @@ def create_table(conn):
 
 
 def store_playlists(playlists, conn):
-    """ Store all playlists in the database
+    """
+    Store all playlists in the database
     :param playlists: The List of playlists
     :param conn: The database connection
     """
@@ -82,6 +87,10 @@ def add_playlist(conn, playlist):
 
 
 def get_all_playlists():
+    """
+    Load all playlists from the database
+    :return: The playlists
+    """
     conn = create_connection()
     playlists = conn.execute(LIST_PLAYLISTS).fetchall()
     conn.close()
@@ -89,7 +98,23 @@ def get_all_playlists():
 
 
 def get_playlist(playlist_id):
+    """
+    Get the playlist identified by the id
+    :param playlist_id: The database id of the playlist
+    :return: The playlist entry
+    """
     conn = create_connection()
     playlist = conn.execute(SELECT_PLAYLIST, (playlist_id,)).fetchone()[0]
     conn.close()
     return playlist
+
+
+def set_rfid_to_playlist(rfid, playlist_id):
+    """
+    Add or update the rfid value of a playlist entry
+    :param rfid: The rfid value to set
+    :param playlist_id: The database id of the playlist
+    """
+    conn = create_connection()
+    conn.execute(SET_RFID, (rfid, playlist_id,))
+    conn.close()

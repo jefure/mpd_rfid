@@ -1,6 +1,6 @@
 import base64
 
-from flask import Flask, render_template, flash, url_for
+from flask import Flask, render_template, url_for
 from mpd import CommandError
 from werkzeug.utils import redirect
 
