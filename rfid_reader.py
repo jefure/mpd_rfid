@@ -29,9 +29,7 @@ def main():
     parser.add_argument('-p', '--playlist', help='Process playlists starting with the entered characters')
     args = parser.parse_args()
     if args.test_reader:
-        print('Put RFID tag on the reader')
         rfid = read_rfid()
-        print('Got id: ', rfid)
         exit()
 
     query = args.playlist
@@ -41,7 +39,7 @@ def main():
         if query is None:
             process_with_skip(args, playlist)
         else:
-            if re.match(query, playlist, re.I):
+            if bool(re.match(query, playlist, re.I)):
                 process_with_skip(args, playlist)
 
 
@@ -80,7 +78,9 @@ def get_user_input(playlist_name):
 
 def read_rfid():
     try:
+        print('Put RFID tag on the reader')
         rfid, text = reader.read()
+        print('Got id: ', rfid)
         return rfid
     finally:
         GPIO.cleanup()
