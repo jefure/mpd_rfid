@@ -21,7 +21,7 @@ INSERT INTO playlistKeys(playlist_name,rfid,added_date) VALUES (?,?,?)
 '''
 
 LIST_PLAYLISTS = '''
-SELECT * FROM playlistKeys
+SELECT id,playlist_name,rfid,added_date FROM playlistKeys ORDER BY playlist_name
 '''
 
 SELECT_PLAYLIST = '''

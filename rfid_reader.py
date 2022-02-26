@@ -23,14 +23,34 @@ def main():
     parser.add_argument('-s', '--skip_with_rfid',
                         action='store_true',
                         help="Do not ask for RFID when the entry has already a RFID")
+    parser.add_argument('-t', '--test_reader',
+                        action='store_true',
+                        help='Test the rfid reader')
+    parser.add_argument('-p', '--playlist', help='Process playlists starting with the entered characters')
     args = parser.parse_args()
+    if args.test_reader:
+        print('Put RFID tag on the reader');
+        rfid = read_rfid()
+        print('Got id: ', rfid)
+        exit();
+
+    query = args.playlist
+    print("Query:", query)
     playlists = db.get_all_playlists()
     for playlist in playlists:
-        if args.skip_with_rfid:
-            if playlist[2] != -1:
-                process_playlist(playlist[1])
+        if query not None:
+            if re.match(query, playlist, re.I):
+                process_with_skip(playlist)
         else:
-            process_playlist(playlist[1])
+            process_with_skip(playlist)
+
+
+def process_with_skip(playlist):
+    if args.skip_with_rfid:
+         if playlist[2] != -1:
+             process_playlist(playlist[1])
+    else:
+        process_playlist(playlist[1])
 
 
 def process_playlist(playlist_name):
@@ -39,6 +59,7 @@ def process_playlist(playlist_name):
         rfid = read_rfid()
         db.set_rfid_to_playlist(rfid, playlist_name)
     elif user_choice == 'x':
+        GPIO.cleanup()
         exit()
 
 
