@@ -7,14 +7,14 @@ from prompt_toolkit.formatted_text import HTML
 from prompt_toolkit.styles import Style
 import repository as db
 import argparse
-
+import re
 
 reader = SimpleMFRC522()
 menu_style = Style.from_dict({
-    'dialog':             'bg:#88ff88',
+    'dialog': 'bg:#88ff88',
     'dialog frame.label': 'bg:#ffffff #000000',
-    'dialog.body':        'bg:#000000 #00ff00',
-    'dialog shadow':      'bg:#00aa00',
+    'dialog.body': 'bg:#000000 #00ff00',
+    'dialog shadow': 'bg:#00aa00',
 })
 
 
@@ -29,26 +29,26 @@ def main():
     parser.add_argument('-p', '--playlist', help='Process playlists starting with the entered characters')
     args = parser.parse_args()
     if args.test_reader:
-        print('Put RFID tag on the reader');
+        print('Put RFID tag on the reader')
         rfid = read_rfid()
         print('Got id: ', rfid)
-        exit();
+        exit()
 
     query = args.playlist
     print("Query:", query)
     playlists = db.get_all_playlists()
     for playlist in playlists:
-        if query not None:
-            if re.match(query, playlist, re.I):
-                process_with_skip(playlist)
+        if query is None:
+            process_with_skip(args, playlist)
         else:
-            process_with_skip(playlist)
+            if re.match(query, playlist, re.I):
+                process_with_skip(args, playlist)
 
 
-def process_with_skip(playlist):
+def process_with_skip(args, playlist):
     if args.skip_with_rfid:
-         if playlist[2] != -1:
-             process_playlist(playlist[1])
+        if playlist[2] != -1:
+            process_playlist(playlist[1])
     else:
         process_playlist(playlist[1])
 
