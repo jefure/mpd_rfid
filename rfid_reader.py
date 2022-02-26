@@ -39,7 +39,7 @@ def main():
         if query is None:
             process_with_skip(args, playlist)
         else:
-            if bool(re.match(query, playlist, re.I)):
+            if bool(re.match(query, playlist[1], re.I)):
                 process_with_skip(args, playlist)
 
 
