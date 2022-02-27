@@ -1,15 +1,14 @@
 #!/usr/bin/env python
 
-import RPi.GPIO as GPIO
-from mfrc522 import SimpleMFRC522
 from prompt_toolkit.shortcuts import button_dialog
 from prompt_toolkit.formatted_text import HTML
 from prompt_toolkit.styles import Style
 import repository as db
+import rc522_reader as reader
 import argparse
 import re
 
-reader = SimpleMFRC522()
+
 menu_style = Style.from_dict({
     'dialog': 'bg:#88ff88',
     'dialog frame.label': 'bg:#ffffff #000000',
@@ -29,7 +28,7 @@ def main():
     parser.add_argument('-p', '--playlist', help='Process playlists starting with the entered characters')
     args = parser.parse_args()
     if args.test_reader:
-        rfid = read_rfid()
+        rfid = reader.read_rfid()
         exit()
 
     query = args.playlist
@@ -54,10 +53,10 @@ def process_with_skip(args, playlist):
 def process_playlist(playlist_name):
     user_choice = get_user_input(playlist_name)
     if user_choice == 'a':
-        rfid = read_rfid()
+        rfid = reader.read_rfid()
         db.set_rfid_to_playlist(rfid, playlist_name)
     elif user_choice == 'x':
-        GPIO.cleanup()
+        reader.cleanup()
         exit()
 
 
@@ -74,16 +73,6 @@ def get_user_input(playlist_name):
         style=menu_style
     ).run()
     return result
-
-
-def read_rfid():
-    try:
-        print('Put RFID tag on the reader')
-        rfid, text = reader.read()
-        print('Got id: ', rfid)
-        return rfid
-    finally:
-        GPIO.cleanup()
 
 
 if __name__ == '__main__':

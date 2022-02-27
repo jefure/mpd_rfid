@@ -28,6 +28,10 @@ SELECT_PLAYLIST = '''
 SELECT playlist_name FROM playlistKeys WHERE id = ?
 '''
 
+SELECT_PLAYLIST_BY_RFID = '''
+SELECT playlist_name FROM playlistKeys WHERE rfid = ?
+'''
+
 SET_RFID = '''
 UPDATE playlistKeys SET rfid = ? WHERE id = ?
 '''
@@ -101,10 +105,22 @@ def get_playlist(playlist_id):
     """
     Get the playlist identified by the id
     :param playlist_id: The database id of the playlist
-    :return: The playlist entry
+    :return: The playlist name
     """
     conn = create_connection()
     playlist = conn.execute(SELECT_PLAYLIST, (playlist_id,)).fetchone()[0]
+    conn.close()
+    return playlist
+
+
+def get_playlist_by_rfid(rfid):
+    """
+    Get the playlist identified by the rfid
+    :param rfid: The stored rfid of the playlist
+    :return: The playlist name
+    """
+    conn = create_connection()
+    playlist = conn.execute(SELECT_PLAYLIST_BY_RFID, (rfid,)).fetchone()[0]
     conn.close()
     return playlist
 
