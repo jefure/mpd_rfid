@@ -60,6 +60,10 @@ def get_image(client, playlist):
     return {}
 
 
+def clear_current_playlist(client):
+    client.clear()
+
+
 def load_image(client, song):
     image = {}
     try:

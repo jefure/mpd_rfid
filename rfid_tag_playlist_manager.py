@@ -28,33 +28,33 @@ def main():
     parser.add_argument('-p', '--playlist', help='Process playlists starting with the entered characters')
     args = parser.parse_args()
     if args.test_reader:
-        rfid = reader.read_rfid()
+        reader.read_rfid()
         exit()
 
     query = args.playlist
-    print("Query:", query)
-    playlists = db.get_all_playlists()
+
+    if query is None:
+        playlists = db.get_all_playlists()
+    else:
+        playlists = db.search_playlist(query)
+
     for playlist in playlists:
-        if query is None:
-            process_with_skip(args, playlist)
-        else:
-            if bool(re.match(query, playlist[1], re.I)):
-                process_with_skip(args, playlist)
+        process_with_skip(args, playlist)
 
 
 def process_with_skip(args, playlist):
     if args.skip_with_rfid:
         if playlist[2] != -1:
-            process_playlist(playlist[1])
+            process_playlist(playlist)
     else:
-        process_playlist(playlist[1])
+        process_playlist(playlist)
 
 
-def process_playlist(playlist_name):
-    user_choice = get_user_input(playlist_name)
+def process_playlist(playlist):
+    user_choice = get_user_input(playlist[1])
     if user_choice == 'a':
         rfid = reader.read_rfid()
-        db.set_rfid_to_playlist(rfid, playlist_name)
+        db.set_rfid_to_playlist(rfid, playlist[0])
     elif user_choice == 'x':
         reader.cleanup()
         exit()

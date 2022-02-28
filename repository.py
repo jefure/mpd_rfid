@@ -32,6 +32,10 @@ SELECT_PLAYLIST_BY_RFID = '''
 SELECT playlist_name FROM playlistKeys WHERE rfid = ?
 '''
 
+SELECT_PLAYLIST_BY_QUERY = '''
+SELECT id,playlist_name,rfid,added_date FROM playlistKeys WHERE playlist_name like ?
+'''
+
 SET_RFID = '''
 UPDATE playlistKeys SET rfid = ? WHERE id = ?
 '''
@@ -125,6 +129,19 @@ def get_playlist_by_rfid(rfid):
     return playlist
 
 
+def search_playlist(query):
+    """
+    Search for playlist containing the query string
+    :param query: The search string
+    :return: The list of playlist names
+    """
+    conn = create_connection()
+    real_query = "%" + query.strip() + "%"
+    playlist = conn.execute(SELECT_PLAYLIST_BY_QUERY, (real_query,)).fetchmany()
+    conn.close()
+    return playlist
+
+
 def set_rfid_to_playlist(rfid, playlist_id):
     """
     Add or update the rfid value of a playlist entry
@@ -132,5 +149,7 @@ def set_rfid_to_playlist(rfid, playlist_id):
     :param playlist_id: The database id of the playlist
     """
     conn = create_connection()
-    conn.execute(SET_RFID, (rfid, playlist_id,))
+    cur = conn.cursor()
+    cur.execute(SET_RFID, (rfid, playlist_id))
+    conn.commit()
     conn.close()
