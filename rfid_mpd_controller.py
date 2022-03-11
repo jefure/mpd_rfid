@@ -2,7 +2,7 @@ import repository as db
 import mpd_handler as mpd
 import rc522_reader as reader
 
-current_playlist = None
+current_playlist = ""
 
 
 def main():
@@ -14,7 +14,9 @@ def read_rfid():
     while True:
         rfid = reader.read_rfid()
         playlist_name = db.get_playlist_by_rfid(rfid)
-        play_playlist(playlist_name)
+        if playlist_name is not current_playlist:
+            play_playlist(playlist_name)
+            current_playlist = playlist_name
 
 
 def play_playlist(playlist_name):
