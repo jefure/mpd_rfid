@@ -14,7 +14,7 @@ def read_rfid():
     while True:
         rfid = reader.read_rfid()
         playlist_name = db.get_playlist_by_rfid(rfid)
-        if playlist_name is not current_playlist:
+        if playlist_name != current_playlist:
             play_playlist(playlist_name)
             current_playlist = playlist_name
 
