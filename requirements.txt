@@ -11,3 +11,5 @@ mfrc522==0.0.7
 python-mpd2==3.0.5
 RPi.GPIO==0.7.0
 spidev==3.5
+Werkzeug~=2.0.2
+python-mpd2==3.0.3
